@@ -1,6 +1,6 @@
 {
   "name": "bsr-helper",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "dev": "vue-cli-service serve",
@@ -9,6 +9,7 @@
     "if": "node dev/iconfont/index.js"
   },
   "dependencies": {
+    "clipboard-copy": "^4.0.1",
     "core-js": "^3.6.5",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",

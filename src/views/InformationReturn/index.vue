@@ -314,8 +314,8 @@
                       <div
                         v-if="
                           !drag &&
-                            vehicle === VehicleType.Drive &&
-                            personnel.driver
+                          vehicle === VehicleType.Drive &&
+                          personnel.driver
                         "
                         class="driver"
                       >
@@ -374,7 +374,7 @@
             <!-- 输入框 -->
             <template v-if="item.type === VehicleType.Custom">
               <div class="vehicle-input">
-                <van-field v-model="vehicleCustom" placeholder="交通工具" />
+                <van-field v-model="vehicleCustom" placeholder="如：骑马" />
               </div>
             </template>
             <template v-else-if="item.type === VehicleType.Drive">
@@ -438,6 +438,7 @@
 <script lang="ts">
 import moment from 'moment'
 import _ from 'lodash'
+import clipboardCopy from 'clipboard-copy'
 
 import Storage from '@/utils/Storage'
 import { InformationReturnTypes } from '@/views/InformationReturn/index'
@@ -557,6 +558,10 @@ export default class InformationReturn extends Vue {
       name: '开车'
     },
     {
+      type: VehicleType.Bike,
+      name: '骑车'
+    },
+    {
       type: VehicleType.Walk,
       name: '步行'
     },
@@ -580,12 +585,14 @@ export default class InformationReturn extends Vue {
   /**
    * 专业工具 列表
    */
-  private professionalToolsList: InformationReturnTypes.ProfessionalToolItem[] = getProfessionalToolsList()
+  private professionalToolsList: InformationReturnTypes.ProfessionalToolItem[] =
+    getProfessionalToolsList()
 
   /**
    * 自定义专业工具 列表
    */
-  customProfessionalToolsList: InformationReturnTypes.ProfessionalToolItem[] = []
+  customProfessionalToolsList: InformationReturnTypes.ProfessionalToolItem[] =
+    []
 
   created() {
     // 任务简介
@@ -593,9 +600,10 @@ export default class InformationReturn extends Vue {
       Storage.Instance.get(StorageItemType.Mission) || this.missionContent
 
     // 时间
-    const storageTime = Storage.Instance.get<
-      InformationReturnTypes.StorageTime
-    >(StorageItemType.Time)
+    const storageTime =
+      Storage.Instance.get<InformationReturnTypes.StorageTime>(
+        StorageItemType.Time
+      )
 
     // 如果保存过时间
     if (storageTime) {
@@ -625,9 +633,10 @@ export default class InformationReturn extends Vue {
       Storage.Instance.get(StorageItemType.Personnel) || this.personnelList
 
     // 交通工具
-    const storageVehicle = Storage.Instance.get<
-      InformationReturnTypes.StorageVehicle
-    >(StorageItemType.Vehicle)
+    const storageVehicle =
+      Storage.Instance.get<InformationReturnTypes.StorageVehicle>(
+        StorageItemType.Vehicle
+      )
 
     if (storageVehicle) {
       this.vehicle = storageVehicle.current
@@ -636,9 +645,10 @@ export default class InformationReturn extends Vue {
     }
 
     // 专业工具
-    const storageProfessionalTool = Storage.Instance.get<
-      InformationReturnTypes.StorageProfessionalTool
-    >(StorageItemType.ProfessionalTools)
+    const storageProfessionalTool =
+      Storage.Instance.get<InformationReturnTypes.StorageProfessionalTool>(
+        StorageItemType.ProfessionalTools
+      )
 
     if (storageProfessionalTool) {
       this.professionalToolsList = storageProfessionalTool.list
@@ -676,7 +686,7 @@ export default class InformationReturn extends Vue {
 
     // 过滤打勾的人员
     const checkedPersonnelList = this.personnelList.filter(
-      personnel => personnel.checked
+      (personnel) => personnel.checked
     )
 
     // 交通工具
@@ -690,6 +700,7 @@ export default class InformationReturn extends Vue {
         vehicle = `1车 (${this.carNumber})`
         break
       case VehicleType.Walk:
+      case VehicleType.Bike:
         vehicle = vehicleInfo!.name
         break
       default:
@@ -698,8 +709,8 @@ export default class InformationReturn extends Vue {
 
     // 专业工具
     const professionalToolsSelectedList = _.concat(
-      this.professionalToolsList.filter(item => item.selected),
-      this.customProfessionalToolsList.filter(item => item.selected)
+      this.professionalToolsList.filter((item) => item.selected),
+      this.customProfessionalToolsList.filter((item) => item.selected)
     )
 
     const outputTextArray = [
@@ -707,7 +718,7 @@ export default class InformationReturn extends Vue {
       // 时间
       timeText,
       // 人员
-      checkedPersonnelList.map(personnel => personnel.name).join('、'),
+      checkedPersonnelList.map((personnel) => personnel.name).join('、'),
       // 人数
       `${checkedPersonnelList.length}人`,
       // 交通工具
@@ -715,7 +726,7 @@ export default class InformationReturn extends Vue {
       // 携带工具
       professionalToolsSelectedList.length > 0
         ? `携带${professionalToolsSelectedList
-            .map(item => item.name)
+            .map((item) => item.name)
             .join('、')}`
         : '',
 
@@ -730,7 +741,7 @@ export default class InformationReturn extends Vue {
     ]
 
     // 过滤出空值
-    this._outputText = outputTextArray.filter(item => item !== '').join(' ')
+    this._outputText = outputTextArray.filter((item) => item !== '').join(' ')
 
     return this._outputText
   }
@@ -751,7 +762,7 @@ export default class InformationReturn extends Vue {
   get getPersonnelList() {
     // 是否已找到司机
     let foundDriver = false
-    return _.map(this.personnelList, item => {
+    return _.map(this.personnelList, (item) => {
       if (item && item.checked && !foundDriver) {
         item.driver = true
         foundDriver = true
@@ -775,10 +786,10 @@ export default class InformationReturn extends Vue {
     }
 
     const list = this.professionalToolsList.filter(
-      item => ~item.name.indexOf(this.professionalToolName)
+      (item) => ~item.name.indexOf(this.professionalToolName)
     )
     const custom = this.customProfessionalToolsList.filter(
-      item => ~item.name.indexOf(this.professionalToolName)
+      (item) => ~item.name.indexOf(this.professionalToolName)
     )
     return _.concat(list, custom)
   }
@@ -926,13 +937,13 @@ export default class InformationReturn extends Vue {
   }
 
   copy() {
-    var save = (e: ClipboardEvent) => {
-      e.clipboardData?.setData('text/plain', this._outputText)
-      e.preventDefault()
-    }
-    document.addEventListener('copy', save)
-    document.execCommand('copy')
-    Notify({ type: 'success', message: '复制成功' })
+    clipboardCopy(this._outputText)
+      .then(() => {
+        Notify({ type: 'success', message: '复制成功' })
+      })
+      .catch(() => {
+        Notify({ type: 'danger', message: '复制失败' })
+      })
 
     // 保存任务简介
     Storage.Instance.set(StorageItemType.Mission, this.missionContent)

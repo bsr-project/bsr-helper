@@ -9,6 +9,7 @@ export enum SelectTimeType {
 export enum VehicleType {
   Custom = 'custom',
   Drive = 'drive',
+  Bike = 'bike',
   Walk = 'walk',
   Metro = 'metro',
   Bus = 'bus'

@@ -595,6 +595,7 @@ export default class InformationReturn extends Vue {
     []
 
   created() {
+    console.log('测试 SftpUploader')
     // 任务简介
     this.missionContent =
       Storage.Instance.get(StorageItemType.Mission) || this.missionContent

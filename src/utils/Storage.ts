@@ -1,31 +1,37 @@
 import _ from 'lodash'
 
 import { StorageItemType } from '@/enums/Storage'
+import Singleton from '@/base/Singleton'
 
 /**
  * 本地存储类封装
  */
-export default class Storage {
-  private static _instance?: Storage
-
-  static get Instance() {
-    if (!this._instance) {
-      this._instance = new Storage()
-    }
-
-    return this._instance
-  }
-
+export default class Storage extends Singleton {
   /**
    * 保存数据
    * @param key
    * @param value
    */
-  set<T>(key: StorageItemType, value: T) {
-    localStorage.setItem(
-      this.getKeyString(key),
-      (_.isObject(value) ? JSON.stringify(value) : value) as string
-    )
+  set<T>(key: StorageItemType, path: string | T, value?: T) {
+    if (value) {
+      // 三个参数都有的情况
+      // 取出整个值
+      let originValue = this.get<{ [key: string]: any } | null>(key)
+      // 为空 或 不是 json 的处理
+      if (originValue === null || !_.isObject(originValue)) {
+        originValue = {}
+      }
+      console.log(originValue)
+      // 保存
+      const saveValue = _.set(originValue, path as string, value)
+      window.localStorage.setItem(
+        this.getKeyString(key),
+        JSON.stringify(saveValue)
+      )
+    } else {
+      // 没设置 value 相当于把 path 作为 value
+      window.localStorage.setItem(this.getKeyString(key), JSON.stringify(path))
+    }
   }
 
   /**
@@ -35,18 +41,20 @@ export default class Storage {
    * @returns
    */
   get<T>(key: StorageItemType, path?: string): T | null {
-    const storage = localStorage.getItem(this.getKeyString(key))
-    if (storage === null) return null
+    const valueString = window.localStorage.getItem(this.getKeyString(key))
+    // 空
+    if (valueString === null) return null
 
-    // 没 path 返回全部内容
-    if (!path) {
-      return this.json2Object(storage) || storage
+    // 如果格式不是 {...} 直接返回这个字符串
+    if (!this.isJson(valueString)) {
+      // 有 path 返回 null 没有 返回字符串
+      return null
     }
 
-    // 有 path 则根据 path 查找目标 value
-    const value = _.get(this.json2Object(storage), path, null)
-    // 如果是对象返回对象
-    return this.json2Object(value) || value
+    // 最后尝试转为 json 根据 path 获取值
+    const json = this.json2Object(valueString)
+
+    return path ? _.get(json, path, null) : json
   }
 
   clear(key: StorageItemType) {
@@ -66,5 +74,9 @@ export default class Storage {
     } catch (e) {
       return null
     }
+  }
+
+  private isJson(str: string) {
+    return /^({.*}|\[.*\])$/.test(str)
   }
 }

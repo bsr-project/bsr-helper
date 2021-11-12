@@ -7,12 +7,12 @@ export enum SelectTimeType {
  * 交通工具
  */
 export enum VehicleType {
-  Custom = 'custom',
-  Drive = 'drive',
-  Bike = 'bike',
-  Walk = 'walk',
-  Metro = 'metro',
-  Bus = 'bus'
+  Custom = 1 << 0,
+  Drive = 1 << 1,
+  Bike = 1 << 2,
+  Walk = 1 << 3,
+  Metro = 1 << 4,
+  Bus = 1 << 5
 }
 
 /**

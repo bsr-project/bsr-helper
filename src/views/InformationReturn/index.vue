@@ -595,14 +595,13 @@ export default class InformationReturn extends Vue {
     []
 
   created() {
-    console.log('测试 SftpUploader')
     // 任务简介
     this.missionContent =
-      Storage.Instance.get(StorageItemType.Mission) || this.missionContent
+      Storage.Instance().get(StorageItemType.Mission) || this.missionContent
 
     // 时间
     const storageTime =
-      Storage.Instance.get<InformationReturnTypes.StorageTime>(
+      Storage.Instance().get<InformationReturnTypes.StorageTime>(
         StorageItemType.Time
       )
 
@@ -631,11 +630,11 @@ export default class InformationReturn extends Vue {
 
     // 人员
     this.personnelList =
-      Storage.Instance.get(StorageItemType.Personnel) || this.personnelList
+      Storage.Instance().get(StorageItemType.Personnel) || this.personnelList
 
     // 交通工具
     const storageVehicle =
-      Storage.Instance.get<InformationReturnTypes.StorageVehicle>(
+      Storage.Instance().get<InformationReturnTypes.StorageVehicle>(
         StorageItemType.Vehicle
       )
 
@@ -647,7 +646,7 @@ export default class InformationReturn extends Vue {
 
     // 专业工具
     const storageProfessionalTool =
-      Storage.Instance.get<InformationReturnTypes.StorageProfessionalTool>(
+      Storage.Instance().get<InformationReturnTypes.StorageProfessionalTool>(
         StorageItemType.ProfessionalTools
       )
 
@@ -742,7 +741,7 @@ export default class InformationReturn extends Vue {
     ]
 
     // 过滤出空值
-    this._outputText = outputTextArray.filter((item) => item !== '').join(' ')
+    this._outputText = outputTextArray.filter((item) => item !== '').join('')
 
     return this._outputText
   }
@@ -889,14 +888,14 @@ export default class InformationReturn extends Vue {
    * 保存人员
    */
   savePersonnel() {
-    Storage.Instance.set(StorageItemType.Personnel, this.personnelList)
+    Storage.Instance().set(StorageItemType.Personnel, this.personnelList)
   }
 
   /**
    * 保存交通工具
    */
   saveVehicle() {
-    Storage.Instance.set<InformationReturnTypes.StorageVehicle>(
+    Storage.Instance().set<InformationReturnTypes.StorageVehicle>(
       StorageItemType.Vehicle,
       {
         current: this.vehicle,
@@ -910,7 +909,7 @@ export default class InformationReturn extends Vue {
    * 保存自己添加的专业工具
    */
   saveProfessionalTool() {
-    Storage.Instance.set<InformationReturnTypes.StorageProfessionalTool>(
+    Storage.Instance().set<InformationReturnTypes.StorageProfessionalTool>(
       StorageItemType.ProfessionalTools,
       {
         list: this.professionalToolsList,
@@ -947,10 +946,10 @@ export default class InformationReturn extends Vue {
       })
 
     // 保存任务简介
-    Storage.Instance.set(StorageItemType.Mission, this.missionContent)
+    Storage.Instance().set(StorageItemType.Mission, this.missionContent)
 
     // 保存时间信息
-    Storage.Instance.set<InformationReturnTypes.StorageTime>(
+    Storage.Instance().set<InformationReturnTypes.StorageTime>(
       StorageItemType.Time,
       {
         isCurrent: this.isCurrentTime,

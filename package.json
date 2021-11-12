@@ -2,7 +2,6 @@
   "name": "bsr-helper",
   "version": "0.1.1",
   "private": true,
-  "type": "module",
   "scripts": {
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",

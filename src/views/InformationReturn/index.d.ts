@@ -24,6 +24,26 @@ export namespace InformationReturnTypes {
   }
 
   /**
+   * 地址
+   */
+  export interface Address {
+    /**
+     * 出发地
+     */
+    departure: string
+
+    /**
+     * 目的地
+     */
+    destination: string
+
+    /**
+     * 历史地址
+     */
+    history: string[]
+  }
+
+  /**
    * 交通工具 对象项目
    */
   export interface VehicleItem {

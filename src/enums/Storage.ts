@@ -7,7 +7,15 @@ export enum StorageItemType {
    */
   Mission = 'mission',
 
+  /**
+   * 时间
+   */
   Time = 'time',
+
+  /**
+   * 地址
+   */
+  Address = 'address',
 
   /**
    * 人员

@@ -3,6 +3,18 @@ export enum SelectTimeType {
   END
 }
 
+export enum AddressType {
+  /**
+   * 出发地
+   */
+  DEPARTURE,
+
+  /**
+   * 目的地
+   */
+  DESTINATION
+}
+
 /**
  * 交通工具
  */

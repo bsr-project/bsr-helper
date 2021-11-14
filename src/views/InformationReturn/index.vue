@@ -260,6 +260,42 @@
         </van-cell>
       </van-collapse-item>
 
+      <!-- 出发地 -->
+      <van-collapse-item name="departure">
+        <template #title>
+          <span>出发地</span>
+        </template>
+
+        <van-field v-model="departure" placeholder="请输入出发地">
+          <template #button>
+            <van-button
+              size="small"
+              type="info"
+              @click="selectHistoryAddress(AddressType.DEPARTURE)"
+              >历史地点</van-button
+            >
+          </template>
+        </van-field>
+      </van-collapse-item>
+
+      <!-- 目的地 -->
+      <van-collapse-item name="destination">
+        <template #title>
+          <span>目的地</span>
+        </template>
+
+        <van-field v-model="destination" placeholder="请输入目的地">
+          <template #button>
+            <van-button
+              size="small"
+              type="info"
+              @click="selectHistoryAddress(AddressType.DESTINATION)"
+              >历史地点</van-button
+            >
+          </template>
+        </van-field>
+      </van-collapse-item>
+
       <!-- 人员 -->
       <van-collapse-item class="personnel" name="personnel">
         <template #title>
@@ -419,11 +455,7 @@
       </van-collapse-item>
     </van-collapse>
 
-    <van-popup
-      v-model="timePickerShow"
-      position="bottom"
-      :style="{ height: '320px' }"
-    >
+    <van-popup v-model="timePickerShow" position="bottom" style="height: 320px">
       <van-datetime-picker
         v-model="currentDate"
         type="datetime"
@@ -432,6 +464,11 @@
         @cancel="timePickerShow = false"
       />
     </van-popup>
+
+    <address-picker
+      :visible.sync="addressPicker.visible"
+      @setAddress="setAddress"
+    />
   </div>
 </template>
 
@@ -443,6 +480,7 @@ import clipboardCopy from 'clipboard-copy'
 import Storage from '@/utils/Storage'
 import { InformationReturnTypes } from '@/views/InformationReturn/index'
 import getProfessionalToolsList from '@/views/InformationReturn/professionalToolsList'
+import OutputFormat from '@/utils/OutputFormat'
 
 import { Component, Vue, Watch } from 'vue-property-decorator'
 import {
@@ -471,38 +509,45 @@ import Draggable from 'vuedraggable'
 
 import {
   SelectTimeType,
+  AddressType,
   VehicleType,
   OutputTextType
 } from '@/enums/InformationReturn'
 import { StorageItemType } from '@/enums/Storage'
 
+import AddressPicker from '@/views/InformationReturn/components/AddressPicker.vue'
+
 @Component({
-  components: [
-    Cell,
-    CellGroup,
-    Collapse,
-    CollapseItem,
-    Field,
-    Switch,
-    DatetimePicker,
-    Popup,
-    Button,
-    List,
-    Icon,
-    Checkbox,
-    Radio,
-    RadioGroup,
-    SwipeCell,
-    Search,
-    Tag,
-    Tab,
-    Tabs,
-    Notify,
-    Draggable
-  ].reduce((components, component) => {
-    components[component.name] = component
-    return components
-  }, {} as { [key: string]: any })
+  components: {
+    ...[
+      Cell,
+      CellGroup,
+      Collapse,
+      CollapseItem,
+      Field,
+      Switch,
+      DatetimePicker,
+      Popup,
+      Button,
+      List,
+      Icon,
+      Checkbox,
+      Radio,
+      RadioGroup,
+      SwipeCell,
+      Search,
+      Tag,
+      Tab,
+      Tabs,
+      Notify,
+      Draggable
+    ].reduce((components, component) => {
+      components[component.name] = component
+      return components
+    }, {} as { [key: string]: any }),
+
+    AddressPicker
+  }
 })
 export default class InformationReturn extends Vue {
   private outputTextTypeValue = OutputTextType.StartOff
@@ -512,6 +557,8 @@ export default class InformationReturn extends Vue {
   private activeNames = [
     'mission',
     'time',
+    'departure',
+    'destination',
     'personnel',
     'vehicle',
     'professionalTools'
@@ -534,6 +581,15 @@ export default class InformationReturn extends Vue {
 
   private startTimeText = ''
   private endTimeText = ''
+
+  // 出发地、目的地
+  private departure = '家'
+  private destination = '训练场'
+  private addressType = AddressType.DEPARTURE
+  private AddressType = AddressType
+  private addressPicker = {
+    visible: false
+  }
 
   private drag = false
   private personnelList: InformationReturnTypes.PersonnelList[] = [
@@ -605,6 +661,10 @@ export default class InformationReturn extends Vue {
         StorageItemType.Time
       )
 
+    const address = Storage.Instance().get<InformationReturnTypes.Address>(
+      StorageItemType.Address
+    )
+
     // 如果保存过时间
     if (storageTime) {
       // 如果存在最后复制的时间 && 使用了当前时间
@@ -617,6 +677,9 @@ export default class InformationReturn extends Vue {
         this.endTime = new Date()
         // 设置为回家
         this.outputTextTypeValue = OutputTextType.GoBackHome
+        // 切换出发地、目的地
+        this.departure = address?.destination || ''
+        this.destination = address?.departure || ''
       } else {
         this.isCurrentTime = true
         this.isCurrentTimeChanged(true)
@@ -626,6 +689,10 @@ export default class InformationReturn extends Vue {
     } else {
       this.isCurrentTime = true
       this.isCurrentTimeChanged(true)
+
+      // 地点
+      this.departure = address?.departure || ''
+      this.destination = address?.destination || ''
     }
 
     // 人员
@@ -713,35 +780,26 @@ export default class InformationReturn extends Vue {
       this.customProfessionalToolsList.filter((item) => item.selected)
     )
 
-    const outputTextArray = [
-      '【信息回传】',
-      // 时间
-      timeText,
-      // 人员
-      checkedPersonnelList.map((personnel) => personnel.name).join('、'),
-      // 人数
-      `${checkedPersonnelList.length}人`,
-      // 交通工具
-      vehicle,
-      // 携带工具
-      professionalToolsSelectedList.length > 0
-        ? `携带${professionalToolsSelectedList
-            .map((item) => item.name)
-            .join('、')}`
-        : '',
+    const outputOptions = {
+      time: timeText,
+      departure: this.departure,
+      destination: this.destination,
+      personnelList: checkedPersonnelList,
+      vehicle: vehicle,
+      vehicleType: this.vehicle,
+      professionalToolsList: professionalToolsSelectedList,
+      mission: this.missionContent
+    }
 
-      // 前往
-      this.outputTextTypeValue === OutputTextType.StartOff ? '前往' : '',
-      // 完成
-      this.outputTextTypeValue === OutputTextType.GoBackHome ? '完成' : '',
-      // 任务
-      this.missionContent,
-      // 安全到家
-      this.outputTextTypeValue === OutputTextType.GoBackHome ? '安全到家' : ''
-    ]
+    switch (this.outputTextTypeValue) {
+      case OutputTextType.StartOff:
+        this._outputText = OutputFormat.Instance().startOff(outputOptions)
+        break
 
-    // 过滤出空值
-    this._outputText = outputTextArray.filter((item) => item !== '').join('')
+      case OutputTextType.GoBackHome:
+        this._outputText = OutputFormat.Instance().goBackHome(outputOptions)
+        break
+    }
 
     return this._outputText
   }
@@ -862,6 +920,32 @@ export default class InformationReturn extends Vue {
     this.timer = null
   }
 
+  /**
+   * 选择历史地址
+   */
+  selectHistoryAddress(type: AddressType) {
+    this.addressType = type
+    this.addressPicker.visible = true
+  }
+
+  /**
+   * 地址选择器 设置地址
+   */
+  setAddress(value: string) {
+    switch (this.addressType) {
+      case AddressType.DEPARTURE:
+        this.departure = value
+        break
+
+      case AddressType.DESTINATION:
+        this.destination = value
+        break
+    }
+  }
+
+  /**
+   * 添加人员
+   */
   addPersonnel() {
     this.personnelList.push({
       name: '',
@@ -871,10 +955,16 @@ export default class InformationReturn extends Vue {
     })
   }
 
+  /**
+   * 移除人员
+   */
   removePersonnel(index: number) {
     this.personnelList.splice(index, 1)
   }
 
+  /**
+   * 添加专业工具
+   */
   addProfessionalTool() {
     this.customProfessionalToolsList.push({
       name: this.professionalToolName,
@@ -914,6 +1004,45 @@ export default class InformationReturn extends Vue {
       {
         list: this.professionalToolsList,
         custom: this.customProfessionalToolsList
+      }
+    )
+  }
+
+  /**
+   * 保存地址
+   */
+  saveAddress() {
+    // 读取本地存储
+    const address = Storage.Instance().get<InformationReturnTypes.Address>(
+      StorageItemType.Address
+    )
+
+    let history: string[] = []
+    if (address && _.isArray(address.history)) {
+      history = _.concat(history, address.history)
+    }
+
+    // 如果没有则加进去
+    if (
+      !_.isEmpty(this.departure.trim()) &&
+      !~_.indexOf(history, this.departure)
+    ) {
+      history.push(this.departure)
+    }
+
+    if (
+      !_.isEmpty(this.destination.trim()) &&
+      !~_.indexOf(history, this.destination)
+    ) {
+      history.push(this.destination)
+    }
+
+    Storage.Instance().set<InformationReturnTypes.Address>(
+      StorageItemType.Address,
+      {
+        departure: this.departure,
+        destination: this.destination,
+        history
       }
     )
   }
@@ -967,6 +1096,9 @@ export default class InformationReturn extends Vue {
 
     // 保存专业工具
     this.saveProfessionalTool()
+
+    // 保存地址
+    this.saveAddress()
   }
 }
 </script>

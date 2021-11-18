@@ -27,10 +27,11 @@
 <template>
   <div class="about">
     <img src="~@/assets/logo.png" alt="" />
-    <h1>bsr-helper</h1>
-    <div>
-      一个懒惰的程序员的屑作。
-    </div>
+    <h1>
+      bsr-helper
+      <span style="font-size: 12px">v1.0.3</span>
+    </h1>
+    <div>一个懒惰的程序员的屑作。</div>
 
     <div class="github">
       <a href="https://github.com/bsr-project/bsr-helper">Github</a>

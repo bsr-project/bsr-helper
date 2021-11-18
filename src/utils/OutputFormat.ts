@@ -23,6 +23,7 @@ export default class OutputFormat extends Singleton {
       '【信息回传】',
       // 时间
       options.time,
+      ' ',
       // 人员
       options.personnelList.map((personnel) => personnel.name).join('、'),
 
@@ -74,6 +75,7 @@ export default class OutputFormat extends Singleton {
       '【信息回传】',
       // 时间
       options.time,
+      ' ',
       // 人员
       options.personnelList.map((personnel) => personnel.name).join('、'),
 

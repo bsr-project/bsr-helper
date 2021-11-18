@@ -415,7 +415,11 @@
             </template>
             <template v-else-if="item.type === VehicleType.Drive">
               <div class="vehicle-input">
-                <van-field v-model="carNumber" placeholder="车牌号" />
+                <van-field
+                  v-model="carNumber"
+                  placeholder="车牌号"
+                  @change="carNumberChanged"
+                />
               </div>
             </template>
           </van-cell>
@@ -430,7 +434,7 @@
 
         <van-search
           v-model="professionalToolName"
-          :show-action="filtratedProfessionalToolsList.length === 0"
+          :show-action="!isExistProfessionalTool"
           placeholder="请输入搜索关键词"
         >
           <template #action>
@@ -582,8 +586,14 @@ export default class InformationReturn extends Vue {
   private startTimeText = ''
   private endTimeText = ''
 
-  // 出发地、目的地
+  /**
+   * 出发地
+   */
   private departure = '家'
+
+  /**
+   * 目的地
+   */
   private destination = '训练场'
   private addressType = AddressType.DEPARTURE
   private AddressType = AddressType
@@ -637,6 +647,7 @@ export default class InformationReturn extends Vue {
    * 搜索用 专业工具名称
    */
   private professionalToolName = ''
+  private isExistProfessionalTool = true
 
   /**
    * 专业工具 列表
@@ -849,7 +860,14 @@ export default class InformationReturn extends Vue {
     const custom = this.customProfessionalToolsList.filter(
       (item) => ~item.name.indexOf(this.professionalToolName)
     )
-    return _.concat(list, custom)
+
+    const filterList = _.concat(list, custom)
+
+    this.isExistProfessionalTool = filterList.some(
+      (item) => item.name === this.professionalToolName
+    )
+
+    return filterList
   }
 
   @Watch('isCurrentTime')
@@ -963,6 +981,13 @@ export default class InformationReturn extends Vue {
   }
 
   /**
+   * carNumber 默认大写
+   */
+  carNumberChanged() {
+    this.carNumber = this.carNumber.toUpperCase()
+  }
+
+  /**
    * 添加专业工具
    */
   addProfessionalTool() {
@@ -1065,7 +1090,12 @@ export default class InformationReturn extends Vue {
     }
   }
 
+  /**
+   * 复制
+   */
   copy() {
+    if (this.verify()) return
+
     clipboardCopy(this._outputText)
       .then(() => {
         Notify({ type: 'success', message: '复制成功' })
@@ -1099,6 +1129,48 @@ export default class InformationReturn extends Vue {
 
     // 保存地址
     this.saveAddress()
+  }
+
+  /**
+   * 复制前的验证
+   */
+  verify() {
+    if (!this.isCurrentTime && this.startTimeText === '') {
+      return Notify({ type: 'warning', message: '请输入起始时间' })
+    }
+
+    if (this.departure === '') {
+      return Notify({ type: 'warning', message: '请输入出发地' })
+    }
+
+    if (
+      this.outputTextTypeValue !== OutputTextType.GoBackHome &&
+      this.destination === ''
+    ) {
+      return Notify({ type: 'warning', message: '请输入目的地' })
+    }
+
+    if (this.missionContent === '') {
+      return Notify({ type: 'warning', message: '请输入任务简介' })
+    }
+
+    if (this.personnelList.length === 0) {
+      return Notify({ type: 'warning', message: '请至少添加一名人员' })
+    }
+
+    if (this.personnelList.some((item) => item.name === '')) {
+      return Notify({ type: 'warning', message: '人员姓名不能为空' })
+    }
+
+    if (this.vehicle === VehicleType.Drive && this.carNumber === '') {
+      return Notify({ type: 'warning', message: '请填写车牌号' })
+    }
+
+    if (this.vehicle === VehicleType.Custom && this.vehicleCustom === '') {
+      return Notify({ type: 'warning', message: '请填写交通工具' })
+    }
+
+    return false
   }
 }
 </script>

@@ -21,17 +21,27 @@ export default class Storage extends Singleton {
       if (originValue === null || !_.isObject(originValue)) {
         originValue = {}
       }
-      console.log(originValue)
+
       // 保存
       const saveValue = _.set(originValue, path as string, value)
       window.localStorage.setItem(
         this.getKeyString(key),
         JSON.stringify(saveValue)
       )
-    } else {
-      // 没设置 value 相当于把 path 作为 value
-      window.localStorage.setItem(this.getKeyString(key), JSON.stringify(path))
+
+      return
     }
+
+    // 没设置 value 相当于把 path 作为 value
+
+    // 是字符串则直接保存
+    if (_.isString(path)) {
+      window.localStorage.setItem(this.getKeyString(key), path)
+      return
+    }
+
+    // 否则转 json
+    window.localStorage.setItem(this.getKeyString(key), JSON.stringify(path))
   }
 
   /**
@@ -48,7 +58,7 @@ export default class Storage extends Singleton {
     // 如果格式不是 {...} 直接返回这个字符串
     if (!this.isJson(valueString)) {
       // 有 path 返回 null 没有 返回字符串
-      return null
+      return valueString as any
     }
 
     // 最后尝试转为 json 根据 path 获取值

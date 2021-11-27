@@ -666,6 +666,8 @@ export default class InformationReturn extends Vue {
     this.missionContent =
       Storage.Instance().get(StorageItemType.Mission) || this.missionContent
 
+    console.log(Storage.Instance().get(StorageItemType.Mission))
+
     // 时间
     const storageTime =
       Storage.Instance().get<InformationReturnTypes.StorageTime>(

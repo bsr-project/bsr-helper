@@ -281,7 +281,17 @@
       <!-- 目的地 -->
       <van-collapse-item name="destination">
         <template #title>
-          <span>目的地</span>
+          <div class="flex-AC">
+            <span>目的地</span>
+            <van-button
+              type="primary"
+              size="mini"
+              icon="sort"
+              style="margin-left: 20px"
+              @click.stop="changeLocale"
+              >切换</van-button
+            >
+          </div>
         </template>
 
         <van-field v-model="destination" placeholder="请输入目的地">
@@ -666,8 +676,6 @@ export default class InformationReturn extends Vue {
     this.missionContent =
       Storage.Instance().get(StorageItemType.Mission) || this.missionContent
 
-    console.log(Storage.Instance().get(StorageItemType.Mission))
-
     // 时间
     const storageTime =
       Storage.Instance().get<InformationReturnTypes.StorageTime>(
@@ -961,6 +969,15 @@ export default class InformationReturn extends Vue {
         this.destination = value
         break
     }
+  }
+
+  /**
+   * 切换出发地目的地
+   */
+  changeLocale() {
+    const temp = this.departure
+    this.departure = this.destination
+    this.destination = temp
   }
 
   /**

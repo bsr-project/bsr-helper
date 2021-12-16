@@ -1205,7 +1205,7 @@ export default class InformationReturn extends Vue {
     }
 
     if (this.vehicle === VehicleType.Drive && this.carNumber === '') {
-      return Notify({ type: 'warning', message: '请填写车牌号' })
+      return Notify({ type: 'warning', message: '请选择车牌号' })
     }
 
     if (this.vehicle === VehicleType.Custom && this.vehicleCustom === '') {

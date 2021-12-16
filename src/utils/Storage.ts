@@ -46,6 +46,12 @@ export default class Storage extends Singleton {
       return
     }
 
+    // 是数组直接转 json 保存
+    if (_.isArray(path)) {
+      window.localStorage.setItem(this.getKeyString(key), JSON.stringify(path))
+      return
+    }
+
     // 如果是对象 先解构已存储的值 再解构传入的值
     originValue = {
       ...originValue,

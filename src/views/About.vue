@@ -29,7 +29,7 @@
     <img src="~@/assets/logo.png" alt="" />
     <h1>
       bsr-helper
-      <span style="font-size: 12px">v1.0.3</span>
+      <span style="font-size: 12px">v1.0.5</span>
     </h1>
     <div>一个懒惰的程序员的屑作。</div>
 

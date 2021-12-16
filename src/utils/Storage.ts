@@ -13,13 +13,19 @@ export default class Storage extends Singleton {
    * @param value
    */
   set<T>(key: StorageItemType, path: string | T, value?: T) {
+    // 取出整个值
+    let originValue = this.get<{ [key: string]: any } | null>(key)
+
     if (value) {
       // 三个参数都有的情况
-      // 取出整个值
-      let originValue = this.get<{ [key: string]: any } | null>(key)
       // 为空 或 不是 json 的处理
       if (originValue === null || !_.isObject(originValue)) {
         originValue = {}
+      }
+
+      originValue = {
+        ...originValue,
+        ...value
       }
 
       // 保存
@@ -40,8 +46,17 @@ export default class Storage extends Singleton {
       return
     }
 
-    // 否则转 json
-    window.localStorage.setItem(this.getKeyString(key), JSON.stringify(path))
+    // 如果是对象 先解构已存储的值 再解构传入的值
+    originValue = {
+      ...originValue,
+      ...path
+    }
+
+    // 转 json 字符串保存
+    window.localStorage.setItem(
+      this.getKeyString(key),
+      JSON.stringify(originValue)
+    )
   }
 
   /**

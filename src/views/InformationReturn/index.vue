@@ -284,10 +284,11 @@
           <div class="flex-AC">
             <span>目的地</span>
             <van-button
-              type="primary"
+              type="info"
               size="mini"
               icon="sort"
               style="margin-left: 20px"
+              plain
               @click.stop="changeLocale"
               >切换</van-button
             >
@@ -416,6 +417,15 @@
                 <van-radio :name="item.type" />
                 <span>{{ item.name }}</span>
               </div>
+              <van-button
+                v-if="item.type === VehicleType.Drive"
+                type="info"
+                size="mini"
+                style="margin-left: 20px"
+                plain
+                @click="selectCarNumber"
+                >选择车牌</van-button
+              >
             </template>
             <!-- 输入框 -->
             <template v-if="item.type === VehicleType.Custom">
@@ -425,11 +435,7 @@
             </template>
             <template v-else-if="item.type === VehicleType.Drive">
               <div class="vehicle-input">
-                <van-field
-                  v-model="carNumber"
-                  placeholder="车牌号"
-                  @change="carNumberChanged"
-                />
+                <span>{{ carNumber !== '' ? carNumber : '未选择车牌' }}</span>
               </div>
             </template>
           </van-cell>
@@ -479,9 +485,15 @@
       />
     </van-popup>
 
-    <address-picker
+    <AddressPicker
       :visible.sync="addressPicker.visible"
       @setAddress="setAddress"
+    />
+
+    <CarNumberPicker
+      :visible.sync="carNumberPicker.visible"
+      @saveVehicle="saveVehicle"
+      @confirm="selectCarNumberConfirm"
     />
   </div>
 </template>
@@ -530,6 +542,7 @@ import {
 import { StorageItemType } from '@/enums/Storage'
 
 import AddressPicker from '@/views/InformationReturn/components/AddressPicker.vue'
+import CarNumberPicker from '@/views/InformationReturn/components/CarNumberPicker.vue'
 
 @Component({
   components: {
@@ -560,7 +573,8 @@ import AddressPicker from '@/views/InformationReturn/components/AddressPicker.vu
       return components
     }, {} as { [key: string]: any }),
 
-    AddressPicker
+    AddressPicker,
+    CarNumberPicker
   }
 })
 export default class InformationReturn extends Vue {
@@ -650,8 +664,13 @@ export default class InformationReturn extends Vue {
       name: '公交'
     }
   ]
+
   private carNumber = ''
   private vehicleCustom = ''
+
+  private carNumberPicker = {
+    visible: false
+  }
 
   /**
    * 搜索用 专业工具名称
@@ -727,9 +746,9 @@ export default class InformationReturn extends Vue {
       )
 
     if (storageVehicle) {
-      this.vehicle = storageVehicle.current
+      this.vehicle = storageVehicle.current || VehicleType.Custom
       this.vehicleCustom = storageVehicle.custom || ''
-      this.carNumber = storageVehicle.carNumber || ''
+      this.carNumber = storageVehicle.currentCarNumber || ''
     }
 
     // 专业工具
@@ -1000,10 +1019,14 @@ export default class InformationReturn extends Vue {
   }
 
   /**
-   * carNumber 默认大写
+   * 选择车牌
    */
-  carNumberChanged() {
-    this.carNumber = this.carNumber.toUpperCase()
+  selectCarNumber() {
+    this.carNumberPicker.visible = true
+  }
+
+  selectCarNumberConfirm(carNumber: string) {
+    this.carNumber = carNumber
   }
 
   /**
@@ -1034,7 +1057,7 @@ export default class InformationReturn extends Vue {
       {
         current: this.vehicle,
         custom: this.vehicleCustom,
-        carNumber: this.carNumber
+        currentCarNumber: this.carNumber
       }
     )
   }

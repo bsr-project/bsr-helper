@@ -8,3 +8,34 @@
   display: flex;
   align-items: center;
 }
+
+.flex-BC {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cl-primary {
+  color: #1989fa;
+}
+
+.cl-success {
+  color: #3cba92;
+}
+
+.cl-danger {
+  color: #e43347;
+}
+
+.cl-6 {
+  color: #666;
+}
+
+.cl-9 {
+  color: #999;
+}
+
+.cl-c {
+  color: #ccc;
+}

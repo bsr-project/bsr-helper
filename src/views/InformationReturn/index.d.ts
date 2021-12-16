@@ -52,17 +52,48 @@ export namespace InformationReturnTypes {
   }
 
   /**
+   * 车牌列表项
+   */
+  export interface CarNumberItem {
+    /**
+     * 车主
+     */
+    owner: string
+
+    /**
+     * 车牌号
+     */
+    carNumber: string
+  }
+
+  export interface StorageVehicle {
+    /**
+     * 当前交通工具
+     */
+    current?: VehicleType
+
+    /**
+     * 自定义交通工具
+     */
+    custom?: string
+
+    /**
+     * 当前车牌
+     */
+    currentCarNumber?: string
+
+    /**
+     * 车牌号列表
+     */
+    carNumberList?: CarNumberItem[]
+  }
+
+  /**
    * 专业工具 对象项目
    */
   export interface ProfessionalToolItem {
     name: string
     selected: boolean
-  }
-
-  export interface StorageVehicle {
-    current: VehicleType
-    custom: string
-    carNumber: string
   }
 
   export interface StorageTime {

@@ -41,7 +41,7 @@ export default class Request extends Singleton {
       switch (code) {
         // 登录失效
         case 1001: {
-          // UserModule.ClearToken()
+          UserModule.ClearToken()
           router.push('/login')
           break
         }

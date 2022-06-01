@@ -43,7 +43,7 @@ export enum StorageItemType {
   Token = 'token',
 
   /**
-   * 用户名
+   * 用户信息 id, name
    */
-  UserName = 'userName'
+  UserInfo = 'userInfo'
 }

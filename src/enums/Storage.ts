@@ -35,5 +35,15 @@ export enum StorageItemType {
   /**
    * 自己添加的工具
    */
-  CustomProfessionalTools = 'customProfessionalTools'
+  CustomProfessionalTools = 'customProfessionalTools',
+
+  /**
+   * token
+   */
+  Token = 'token',
+
+  /**
+   * 用户名
+   */
+  UserName = 'userName'
 }

@@ -8,7 +8,7 @@ const professionalToolsList = ['破拆斧', '冲锋舟', '绳索', '液压钳']
  */
 export default function getProfessionalToolsList() {
   const list: InformationReturnTypes.ProfessionalToolItem[] = []
-  _.forEach(professionalToolsList, toolName => {
+  _.forEach(professionalToolsList, (toolName) => {
     list.push({
       name: toolName,
       selected: false

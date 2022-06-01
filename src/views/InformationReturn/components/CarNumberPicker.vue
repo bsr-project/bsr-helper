@@ -1,6 +1,7 @@
 <style lang="scss" scoped>
 .control-button {
   padding: 10px 20px 0 20px;
+
   span {
     padding: 3px 5px;
   }
@@ -21,17 +22,21 @@
       height: 10px;
       /**/
     }
+
     &::-webkit-scrollbar-track {
       background: rgb(239, 239, 239);
       border-radius: 2px;
     }
+
     &::-webkit-scrollbar-thumb {
       background: #bfbfbf;
       border-radius: 10px;
     }
+
     &::-webkit-scrollbar-thumb:hover {
       background: #333;
     }
+
     &::-webkit-scrollbar-corner {
       background: #179a16;
     }
@@ -86,14 +91,8 @@
 </style>
 
 <template>
-  <van-popup
-    v-model="showPicker"
-    round
-    position="bottom"
-    style="height: 420px"
-    @close="confirm"
-    @closed="$emit('update:visible', false)"
-  >
+  <van-popup v-model="showPicker" round position="bottom" style="height: 420px" @close="confirm"
+    @closed="$emit('update:visible', false)">
     <!-- <van-picker
       show-toolbar
       :columns="pickerList"
@@ -108,17 +107,8 @@
 
     <div class="car-number-picker">
       <div class="car-number-picker-inner">
-        <van-radio-group
-          v-if="carNumberList.length > 0"
-          v-model="selecteCarNumber"
-          @change="selectCarNumberChanged"
-        >
-          <van-radio
-            class="radio-item"
-            v-for="item in carNumberList"
-            :key="item.carNumber"
-            :name="item.carNumber"
-          >
+        <van-radio-group v-if="carNumberList.length > 0" v-model="selecteCarNumber" @change="selectCarNumberChanged">
+          <van-radio class="radio-item" v-for="item in carNumberList" :key="item.carNumber" :name="item.carNumber">
             <div class="flex-BC">
               <div>
                 <span class="carNumber">({{ item.carNumber }}) </span>
@@ -126,12 +116,7 @@
               </div>
 
               <div>
-                <van-button
-                  type="danger"
-                  size="mini"
-                  @click.prevent.stop="remove(item.carNumber)"
-                  >删除</van-button
-                >
+                <van-button type="danger" size="mini" @click.prevent.stop="remove(item.carNumber)">删除</van-button>
               </div>
             </div>
           </van-radio>
@@ -146,9 +131,7 @@
       <van-cell class="add-car-number-container">
         <template #title>
           <span>填写车主姓名，方便识别车辆是谁的</span>
-          <van-button type="primary" size="mini" @click="addCarNumber"
-            >添加车牌</van-button
-          >
+          <van-button type="primary" size="mini" @click="addCarNumber">添加车牌</van-button>
         </template>
 
         <template #label>
@@ -182,7 +165,6 @@ import { InformationReturnTypes } from '@/views/InformationReturn'
 
 import { StorageItemType } from '@/enums/Storage'
 import Storage from '@/utils/Storage'
-import { VehicleType } from '@/enums/InformationReturn'
 
 @Component({
   name: 'CarNumberPicker',

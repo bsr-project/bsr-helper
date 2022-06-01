@@ -28,6 +28,7 @@
     .flip-list-move {
       transition: transform 0.5s;
     }
+
     .no-move {
       transition: transform 0s;
     }
@@ -54,7 +55,7 @@
         display: flex;
         flex-direction: row;
 
-        & > div {
+        &>div {
           margin: 0 5px;
           padding: 5px 10px;
           border-radius: 5px;
@@ -122,7 +123,7 @@
       justify-content: left;
       align-items: center;
 
-      & > div {
+      &>div {
         display: flex;
         flex-direction: row;
         justify-content: left;
@@ -157,12 +158,8 @@
       <van-cell-group inset>
         <van-cell class="output-text-type">
           <div class="output-text-type-item">
-            <div
-              v-for="(name, key) in OutputTextType"
-              :key="key"
-              @click="outputTextTypeValue = name"
-              :class="{ active: outputTextTypeValue === name }"
-            >
+            <div v-for="(name, key) in OutputTextType" :key="key" @click="outputTextTypeValue = name"
+              :class="{ active: outputTextTypeValue === name }">
               {{ name }}
             </div>
           </div>
@@ -184,13 +181,7 @@
         </template>
         <van-cell-group inset>
           <van-cell>
-            <van-field
-              v-model="missionContent"
-              rows="2"
-              autosize
-              type="textarea"
-              placeholder="如：马拉松安保训练"
-            />
+            <van-field v-model="missionContent" rows="2" autosize type="textarea" placeholder="如：马拉松安保训练" />
           </van-cell>
         </van-cell-group>
       </van-collapse-item>
@@ -211,49 +202,23 @@
             <span v-if="isCurrentTime" class="current-time">
               {{ currentTime }}
             </span>
-            <van-switch
-              v-model="isCurrentTime"
-              active-color="#13ce66"
-              size="24"
-            />
+            <van-switch v-model="isCurrentTime" active-color="#13ce66" size="24" />
           </template>
         </van-cell>
 
         <van-cell v-if="!isCurrentTime" center title="自定义时间">
           <template #label>
-            <van-field
-              v-model="startTimeText"
-              center
-              clearable
-              label="起始时间"
-              placeholder="请输入或选择一个时间"
-            >
+            <van-field v-model="startTimeText" center clearable label="起始时间" placeholder="请输入或选择一个时间">
               <template #button>
-                <van-button
-                  size="small"
-                  type="primary"
-                  class="select-time"
-                  @click="selectTime(selectTimeType.START)"
-                  >选择</van-button
-                >
+                <van-button size="small" type="primary" class="select-time" @click="selectTime(selectTimeType.START)">选择
+                </van-button>
               </template>
             </van-field>
 
-            <van-field
-              v-model="endTimeText"
-              center
-              clearable
-              label="结束时间"
-              placeholder="可选"
-            >
+            <van-field v-model="endTimeText" center clearable label="结束时间" placeholder="可选">
               <template #button>
-                <van-button
-                  size="small"
-                  type="primary"
-                  class="select-time"
-                  @click="selectTime(selectTimeType.END)"
-                  >选择</van-button
-                >
+                <van-button size="small" type="primary" class="select-time" @click="selectTime(selectTimeType.END)">选择
+                </van-button>
               </template>
             </van-field>
           </template>
@@ -268,12 +233,7 @@
 
         <van-field v-model="departure" placeholder="请输入出发地">
           <template #button>
-            <van-button
-              size="small"
-              type="info"
-              @click="selectHistoryAddress(AddressType.DEPARTURE)"
-              >历史地点</van-button
-            >
+            <van-button size="small" type="info" @click="selectHistoryAddress(AddressType.DEPARTURE)">历史地点</van-button>
           </template>
         </van-field>
       </van-collapse-item>
@@ -283,26 +243,15 @@
         <template #title>
           <div class="flex-AC">
             <span>目的地</span>
-            <van-button
-              type="info"
-              size="mini"
-              icon="sort"
-              style="margin-left: 20px"
-              plain
-              @click.stop="changeLocale"
-              >切换</van-button
-            >
+            <van-button type="info" size="mini" icon="sort" style="margin-left: 20px" plain @click.stop="changeLocale">
+              切换</van-button>
           </div>
         </template>
 
         <van-field v-model="destination" placeholder="请输入目的地">
           <template #button>
-            <van-button
-              size="small"
-              type="info"
-              @click="selectHistoryAddress(AddressType.DESTINATION)"
-              >历史地点</van-button
-            >
+            <van-button size="small" type="info" @click="selectHistoryAddress(AddressType.DESTINATION)">历史地点
+            </van-button>
           </template>
         </van-field>
       </van-collapse-item>
@@ -313,68 +262,38 @@
           <span class="collapse-item-title">人员</span>
         </template>
 
-        <draggable
-          class="draggable"
-          :list="personnelList"
-          v-bind="dragOptions"
-          handle=".dragHandle"
-          @start="drag = true"
-          @end=";(drag = false), savePersonnel()"
-        >
-          <transition-group
-            type="transition"
-            :name="!drag ? 'flip-list' : null"
-            class="list-group"
-          >
-            <div
-              v-for="(personnel, index) in getPersonnelList"
-              :key="index"
-              :class="{
-                checked: personnel.checked
-              }"
-            >
+        <draggable class="draggable" :list="personnelList" v-bind="dragOptions" handle=".dragHandle"
+          @start="drag = true" @end="; (drag = false), savePersonnel()">
+          <transition-group type="transition" :name="!drag ? 'flip-list' : null" class="list-group">
+            <div v-for="(personnel, index) in getPersonnelList" :key="index" :class="{
+              checked: personnel.checked
+            }">
               <!-- 滑动单元格 -->
-              <van-swipe-cell
-                :disabled="drag"
-                @open="personnel.draggable = false"
-                @close="personnel.draggable = true"
-              >
+              <van-swipe-cell :disabled="drag" @open="personnel.draggable = false" @close="personnel.draggable = true">
                 <!-- 单元格 -->
                 <van-cell>
                   <!-- 姓名输入框 -->
                   <template #title>
                     <div class="personnel-name">
-                      <van-checkbox
-                        v-model="personnel.checked"
-                        @change="savePersonnel"
-                      />
-                      <van-field
-                        v-model="personnel.name"
-                        placeholder="请输入姓名"
-                      />
+                      <van-checkbox v-model="personnel.checked" @change="savePersonnel" />
+                      <van-field v-model="personnel.name" placeholder="请输入姓名" />
                     </div>
                   </template>
 
                   <template>
                     <div class="personnel-right">
                       <!-- 司机标识 -->
-                      <div
-                        v-if="
-                          !drag &&
-                          vehicle === VehicleType.Drive &&
-                          personnel.driver
-                        "
-                        class="driver"
-                      >
+                      <div v-if="
+                        !drag &&
+                        vehicle === VehicleType.Drive &&
+                        personnel.driver
+                      " class="driver">
                         <i class="iconfont icon-fangxiangpan"></i>
                       </div>
                       <div v-else />
 
                       <!-- 拖拽标识 -->
-                      <div
-                        class="drag-handle"
-                        :class="{ dragHandle: personnel.draggable }"
-                      >
+                      <div class="drag-handle" :class="{ dragHandle: personnel.draggable }">
                         <van-icon name="wap-nav" />
                       </div>
                     </div>
@@ -383,12 +302,7 @@
 
                 <!-- 左滑删除按钮 -->
                 <template #right>
-                  <van-button
-                    square
-                    type="danger"
-                    text="删除"
-                    @click="removePersonnel(index)"
-                  />
+                  <van-button square type="danger" text="删除" @click="removePersonnel(index)" />
                 </template>
               </van-swipe-cell>
             </div>
@@ -407,25 +321,14 @@
         </template>
 
         <van-radio-group v-model="vehicle" @change="saveVehicle">
-          <van-cell
-            v-for="item in vehicleList"
-            :key="item.type"
-            @click="vehicle = item.type"
-          >
+          <van-cell v-for="item in vehicleList" :key="item.type" @click="vehicle = item.type">
             <template #title>
               <div>
                 <van-radio :name="item.type" />
                 <span>{{ item.name }}</span>
               </div>
-              <van-button
-                v-if="item.type === VehicleType.Drive"
-                type="info"
-                size="mini"
-                style="margin-left: 20px"
-                plain
-                @click="selectCarNumber"
-                >选择车牌</van-button
-              >
+              <van-button v-if="item.type === VehicleType.Drive" type="info" size="mini" style="margin-left: 20px" plain
+                @click="selectCarNumber">选择车牌</van-button>
             </template>
             <!-- 输入框 -->
             <template v-if="item.type === VehicleType.Custom">
@@ -448,11 +351,7 @@
           <span class="collapse-item-title">专业工具</span>
         </template>
 
-        <van-search
-          v-model="professionalToolName"
-          :show-action="!isExistProfessionalTool"
-          placeholder="请输入搜索关键词"
-        >
+        <van-search v-model="professionalToolName" :show-action="!isExistProfessionalTool" placeholder="请输入搜索关键词">
           <template #action>
             <div @click="addProfessionalTool">添加</div>
           </template>
@@ -460,41 +359,23 @@
 
         <van-cell>
           <div class="professionalToolsList">
-            <van-tag
-              type="primary"
-              v-for="item in filtratedProfessionalToolsList"
-              :key="item.name"
-              :plain="!item.selected"
-              size="large"
-              :color="!item.selected ? '#ccc' : ''"
-              @click="item.selected = !item.selected"
-              >{{ item.name }}</van-tag
-            >
+            <van-tag type="primary" v-for="item in filtratedProfessionalToolsList" :key="item.name"
+              :plain="!item.selected" size="large" :color="!item.selected ? '#ccc' : ''"
+              @click="item.selected = !item.selected">{{ item.name }}</van-tag>
           </div>
         </van-cell>
       </van-collapse-item>
     </van-collapse>
 
     <van-popup v-model="timePickerShow" position="bottom" style="height: 320px">
-      <van-datetime-picker
-        v-model="currentDate"
-        type="datetime"
-        title="选择完整时间"
-        @confirm="datetimeConfirm($event)"
-        @cancel="timePickerShow = false"
-      />
+      <van-datetime-picker v-model="currentDate" type="datetime" title="选择完整时间" @confirm="datetimeConfirm($event)"
+        @cancel="timePickerShow = false" />
     </van-popup>
 
-    <AddressPicker
-      :visible.sync="addressPicker.visible"
-      @setAddress="setAddress"
-    />
+    <AddressPicker :visible.sync="addressPicker.visible" @setAddress="setAddress" />
 
-    <CarNumberPicker
-      :visible.sync="carNumberPicker.visible"
-      @saveVehicle="saveVehicle"
-      @confirm="selectCarNumberConfirm"
-    />
+    <CarNumberPicker :visible.sync="carNumberPicker.visible" @saveVehicle="saveVehicle"
+      @confirm="selectCarNumberConfirm" />
   </div>
 </template>
 
@@ -578,11 +459,11 @@ import CarNumberPicker from '@/views/InformationReturn/components/CarNumberPicke
   }
 })
 export default class InformationReturn extends Vue {
-  private outputTextTypeValue = OutputTextType.StartOff
-  private OutputTextType = OutputTextType
-  private _outputText = ''
+  public outputTextTypeValue = OutputTextType.StartOff
+  public OutputTextType = OutputTextType
+  public _outputText = ''
 
-  private activeNames = [
+  public activeNames = [
     'mission',
     'time',
     'departure',
@@ -592,41 +473,41 @@ export default class InformationReturn extends Vue {
     'professionalTools'
   ]
 
-  private missionContent = '马拉松安保训练'
+  public missionContent = '马拉松安保训练'
 
-  private timePickerShow = false
+  public timePickerShow = false
 
-  private selectTimeType = SelectTimeType
-  private currentSelectTimeType = SelectTimeType.START
-  private isCurrentTime = true
-  private currentTime = ''
-  private timer: number | null = null
-  private currentDate = new Date()
+  public selectTimeType = SelectTimeType
+  public currentSelectTimeType = SelectTimeType.START
+  public isCurrentTime = true
+  public currentTime = ''
+  public timer: number | null = null
+  public currentDate = new Date()
 
-  private timeFormat = 'YYYY/MM/DD HH:mm'
-  private startTime: Date | null = new Date()
-  private endTime: Date | null = null
+  public timeFormat = 'YYYY/MM/DD HH:mm'
+  public startTime: Date | null = new Date()
+  public endTime: Date | null = null
 
-  private startTimeText = ''
-  private endTimeText = ''
+  public startTimeText = ''
+  public endTimeText = ''
 
   /**
    * 出发地
    */
-  private departure = '家'
+  public departure = '家'
 
   /**
    * 目的地
    */
-  private destination = '训练场'
-  private addressType = AddressType.DEPARTURE
-  private AddressType = AddressType
-  private addressPicker = {
+  public destination = '训练场'
+  public addressType = AddressType.DEPARTURE
+  public AddressType = AddressType
+  public addressPicker = {
     visible: false
   }
 
-  private drag = false
-  private personnelList: InformationReturnTypes.PersonnelList[] = [
+  public drag = false
+  public personnelList: InformationReturnTypes.PersonnelList[] = [
     {
       name: '',
       checked: true,
@@ -636,9 +517,9 @@ export default class InformationReturn extends Vue {
   ]
 
   // 交通工具
-  private VehicleType = VehicleType
-  private vehicle = VehicleType.Custom
-  private vehicleList: InformationReturnTypes.VehicleItem[] = [
+  public VehicleType = VehicleType
+  public vehicle = VehicleType.Custom
+  public vehicleList: InformationReturnTypes.VehicleItem[] = [
     {
       type: VehicleType.Custom,
       name: '自定义'
@@ -665,23 +546,23 @@ export default class InformationReturn extends Vue {
     }
   ]
 
-  private carNumber = ''
-  private vehicleCustom = ''
+  public carNumber = ''
+  public vehicleCustom = ''
 
-  private carNumberPicker = {
+  public carNumberPicker = {
     visible: false
   }
 
   /**
    * 搜索用 专业工具名称
    */
-  private professionalToolName = ''
-  private isExistProfessionalTool = true
+  public professionalToolName = ''
+  public isExistProfessionalTool = true
 
   /**
    * 专业工具 列表
    */
-  private professionalToolsList: InformationReturnTypes.ProfessionalToolItem[] =
+  public professionalToolsList: InformationReturnTypes.ProfessionalToolItem[] =
     getProfessionalToolsList()
 
   /**

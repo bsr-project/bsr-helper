@@ -10,4 +10,20 @@ export default class MissionApi extends Request {
       method: 'GET'
     })
   }
+
+  SignIn(data: any) {
+    return this.request({
+      url: '/join-mission/sign-in',
+      method: 'POST',
+      data
+    })
+  }
+
+  SignOut(data: any) {
+    return this.request({
+      url: '/join-mission/sign-out',
+      method: 'POST',
+      data
+    })
+  }
 }

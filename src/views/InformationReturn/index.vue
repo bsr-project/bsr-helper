@@ -290,7 +290,7 @@
                       " class="driver">
                         <i class="iconfont icon-fangxiangpan"></i>
                       </div>
-                      <div v-else />
+                      <div v-else></div>
 
                       <!-- 拖拽标识 -->
                       <div class="drag-handle" :class="{ dragHandle: personnel.draggable }">

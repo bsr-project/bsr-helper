@@ -29,7 +29,7 @@
     @closed="$emit('update:visible', false)">
 
     <div class="control-button flex-BC">
-      <span></span>
+      <span class="cl-9" @click="showPicker = false">关闭</span>
       <span class="cl-primary" @click="Submit">
         确认{{ SignText }}
       </span>
@@ -87,6 +87,7 @@ import {
   Popover,
   CellGroup,
   DatetimePicker,
+  Notify,
 } from 'vant'
 
 import { JoinMissionPickerData } from '@/views/Mission/index'
@@ -130,7 +131,12 @@ export default class JoinMissionPicker extends Vue {
   })
   type!: JoinMissionPickerType
 
-  submitData: JoinMissionPickerData = _.cloneDeep(this.data)
+  submitData: JoinMissionPickerData = {
+    mission_id: 0,
+    checked: [],
+    datetime: '',
+    vehicle: VEHICLE.CUSTOM
+  }
 
   showPicker = this.visible
   showTimePicker = false
@@ -159,7 +165,6 @@ export default class JoinMissionPicker extends Vue {
   }))
 
   created() {
-    console.log(this.vehicleActions)
     const userInfo = Storage.Instance().get<IUserInfo>(StorageItemType.UserInfo)
 
     if (userInfo) {
@@ -170,6 +175,10 @@ export default class JoinMissionPicker extends Vue {
   @Watch('visible')
   visibleChanged() {
     this.showPicker = this.visible
+
+    if (this.visible) {
+      this.submitData = _.cloneDeep(this.data)
+    }
   }
 
   get SignText() {
@@ -188,6 +197,14 @@ export default class JoinMissionPicker extends Vue {
   }
 
   Submit() {
+    if (this.submitData.vehicle === VEHICLE.CUSTOM && _.trim(this.submitData.custom_vehicle) === '') {
+      this.$notify({
+        type: 'danger',
+        message: '请填写交通工具'
+      })
+      return
+    }
+
     this.$emit('submit', {
       ...this.submitData,
       datetime: `${moment().format('YYYY-MM-DD')} ${this.currentTime}:00`,

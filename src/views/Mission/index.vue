@@ -55,9 +55,10 @@
             <van-cell-group inset>
               <van-cell v-for="(children) in mission.children || []" clickable :key="children.mission_id"
                 :title="`${children.title} ${GetTime(children.start_time)} - ${GetTime(children.end_time)}`"
-                @click="IsActived(mission.mission_id) ? SubmissionClick(mission, children) : null">
+                @click="!IsActived(mission.mission_id) && !IsComplete(mission.mission_id) ? SubmissionClick(mission, children) : null">
                 <template #right-icon>
-                  <van-checkbox :name="children.mission_id" :disabled="!IsActived(mission.mission_id)" @click.stop />
+                  <van-checkbox :name="children.mission_id"
+                    :disabled="IsActived(mission.mission_id) || IsComplete(mission.mission_id)" @click.stop />
                 </template>
               </van-cell>
             </van-cell-group>
@@ -80,10 +81,10 @@
           <div class="join-button flex-BC">
             <span></span>
             <van-button :type="IsActived(mission.mission_id) ? 'warning' : 'primary'"
-              :color="mission.diff !== 0 ? '#ccc' : ''" size="small"
-              :disabled="mission.diff !== 0 || !IsActived(mission.mission_id)"
+              :color="mission.diff !== 0 || IsComplete(mission.mission_id) ? '#ccc' : ''" size="small"
+              :disabled="mission.diff !== 0 || IsComplete(mission.mission_id)"
               @click="IsActived(mission.mission_id) ? SignOut(mission) : Sign(mission)" round block>
-              {{ IsActived(mission.mission_id) ? '签退' : '签到' }}
+              {{ IsComplete(mission.mission_id) ? '已完成' : IsActived(mission.mission_id) ? '签退' : '签到' }}
             </van-button>
           </div>
         </div>
@@ -91,7 +92,7 @@
     </van-collapse-item>
 
     <JoinMissionPicker :visible.sync="joinMissionPicker.visible" :data.sync="joinMissionPicker.data"
-      :type="joinMissionPicker.type"></JoinMissionPicker>
+      :type="joinMissionPicker.type" @submit="JoinMissionSubmit"></JoinMissionPicker>
   </van-collapse>
 </template>
 
@@ -128,8 +129,15 @@ export default class Mission extends Vue {
     submission_id: number[]
   } | null = null
 
+  completeMission: number[] = []
+
   checked: number[] = []
   checkboxRefs: number[] = []
+
+  /**
+   * 当前类型
+   */
+  currentJoinMissionType = JoinMissionPickerType.SIGN_IN
 
   joinMissionPicker: {
     visible: boolean
@@ -149,10 +157,14 @@ export default class Mission extends Vue {
 
   /**
    * 是否已加入该任务
-   * @param mission_id 
+   * @param mission_id
    */
   IsActived(mission_id: number) {
     return this.activedMission && this.activedMission.mission_id === mission_id
+  }
+
+  IsComplete(mission_id: number) {
+    return this.completeMission.indexOf(mission_id) !== -1
   }
 
   created() {
@@ -163,6 +175,7 @@ export default class Mission extends Vue {
     const response = await MissionApi.Instance().GetActiveList()
 
     this.activedMission = response.actived
+    this.completeMission = _.map(response.complete, item => item.mission_id)
 
     // 自动展开 今天、明天 的面板
     _.forEach(response.lists, item => {
@@ -194,6 +207,10 @@ export default class Mission extends Vue {
     }
   }
 
+  /**
+   * 签到
+   * @param mission 
+   */
   Sign(mission: Record<string, any>) {
     // 有子任务 但没选择
     if (_.get(mission.children, 'length', 0) > 0 && _.get(mission.checked, 'length', 0) === 0) {
@@ -204,6 +221,7 @@ export default class Mission extends Vue {
       return
     }
 
+    this.currentJoinMissionType = JoinMissionPickerType.SIGN_IN
     this.joinMissionPicker.type = JoinMissionPickerType.SIGN_IN
 
     this.joinMissionPicker.data.mission_id = mission.mission_id
@@ -212,9 +230,12 @@ export default class Mission extends Vue {
     this.joinMissionPicker.visible = true
   }
 
+  /**
+   * 签退
+   * @param mission
+   */
   SignOut(mission: Record<string, any>) {
-    console.log('mission', mission)
-
+    this.currentJoinMissionType = JoinMissionPickerType.SIGN_OUT
     this.joinMissionPicker.type = JoinMissionPickerType.SIGN_OUT
 
     this.joinMissionPicker.data.mission_id = mission.mission_id
@@ -223,13 +244,35 @@ export default class Mission extends Vue {
     this.joinMissionPicker.visible = true
   }
 
-  submit(data: JoinMissionPickerData) {
-    // MissionApi.Instance().SignIn({
-    //   mission_id: mission.mission_id,
-    //   submission_id: mission.checked,
-    //   create_type: 0
-    // })
-    console.log(data)
+  /**
+   * 签到 提交
+   * @param data
+   */
+  async JoinMissionSubmit(data: JoinMissionPickerData) {
+    if (this.currentJoinMissionType === JoinMissionPickerType.SIGN_IN) {
+      await MissionApi.Instance().SignIn({
+        mission_id: data.mission_id,
+        submission_id: data.checked,
+        create_type: 0
+      })
+
+      this.activedMission = {
+        mission_id: data.mission_id,
+        submission_id: data.checked
+      }
+    } else {
+      await MissionApi.Instance().SignOut({
+        mission_id: data.mission_id
+      })
+
+      this.activedMission = null
+      this.completeMission.push(data.mission_id)
+    }
+
+    Notify({
+      type: 'success',
+      message: `${this.currentJoinMissionType === JoinMissionPickerType.SIGN_IN ? '签到' : '签退'}成功`
+    })
   }
 
 }

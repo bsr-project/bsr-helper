@@ -1,4 +1,4 @@
-import { VEHICLE } from '@/enums/JoinMission'
+import { JoinMissionPickerType, VEHICLE } from '@/enums/JoinMission'
 
 export interface JoinMissionPickerData {
   /**

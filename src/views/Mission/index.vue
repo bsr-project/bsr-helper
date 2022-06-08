@@ -1,4 +1,12 @@
 <style lang="scss" scoped>
+.empty-data {
+  height: 200px;
+
+  color: #ccc;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
 .mission {
   .title {
     font-size: 16px;
@@ -31,7 +39,10 @@
 </style>
 
 <template>
-  <van-collapse v-model="activeCollapse" class="mission">
+  <div v-if="missionList.length === 0" class="empty-data flex-CC">
+    <div>暂无任务</div>
+  </div>
+  <van-collapse v-else v-model="activeCollapse" class="mission">
     <van-collapse-item v-for="(mission) in missionList" :key="mission.mission_id" :name="mission.mission_id">
       <template #title>
         <span class="title">{{ mission.title }}</span>
@@ -92,7 +103,8 @@
     </van-collapse-item>
 
     <JoinMissionPicker :visible.sync="joinMissionPicker.visible" :data.sync="joinMissionPicker.data"
-      :type="joinMissionPicker.type" @submit="JoinMissionSubmit"></JoinMissionPicker>
+      :copy-data="joinMissionPicker.copyData" :type="joinMissionPicker.type" @submit="JoinMissionSubmit">
+    </JoinMissionPicker>
   </van-collapse>
 </template>
 
@@ -104,7 +116,7 @@ import JoinMissionPicker from './components/JoinMissionPicker.vue'
 import MissionApi from '@/api/Mission/Mission'
 import _ from 'lodash'
 import moment from 'moment'
-import { JoinMissionPickerData } from '@/views/Mission/index'
+import { MissionCopyData, JoinMissionPickerData } from '@/views/Mission/index'
 import { JoinMissionPickerType, VEHICLE } from '@/enums/JoinMission'
 
 @Component({
@@ -142,7 +154,8 @@ export default class Mission extends Vue {
   joinMissionPicker: {
     visible: boolean
     type: JoinMissionPickerType
-    data: JoinMissionPickerData
+    data: JoinMissionPickerData,
+    copyData: MissionCopyData
   } = {
       visible: false,
       type: JoinMissionPickerType.SIGN_IN,
@@ -152,6 +165,10 @@ export default class Mission extends Vue {
         datetime: '',
         vehicle: VEHICLE.CUSTOM,
         custom_vehicle: ''
+      },
+      copyData: {
+        title: '',
+        location: ''
       }
     }
 
@@ -171,6 +188,9 @@ export default class Mission extends Vue {
     this.GetActiveMissionList()
   }
 
+  /**
+   * 获取可执行的任务
+   */
   async GetActiveMissionList() {
     const response = await MissionApi.Instance().GetActiveList()
 
@@ -227,6 +247,9 @@ export default class Mission extends Vue {
     this.joinMissionPicker.data.mission_id = mission.mission_id
     this.joinMissionPicker.data.checked = mission.checked
 
+    this.joinMissionPicker.copyData.title = mission.title
+    this.joinMissionPicker.copyData.location = mission.location
+
     this.joinMissionPicker.visible = true
   }
 
@@ -240,6 +263,9 @@ export default class Mission extends Vue {
 
     this.joinMissionPicker.data.mission_id = mission.mission_id
     this.joinMissionPicker.data.checked = mission.checked
+
+    this.joinMissionPicker.copyData.title = mission.title
+    this.joinMissionPicker.copyData.location = mission.location
 
     this.joinMissionPicker.visible = true
   }

@@ -1,4 +1,4 @@
-import { JoinMissionPickerType, VEHICLE } from '@/enums/JoinMission'
+import { VEHICLE } from '@/enums/JoinMission'
 
 export interface JoinMissionPickerData {
   /**
@@ -25,4 +25,12 @@ export interface JoinMissionPickerData {
    * 自定义交通工具
    */
   custom_vehicle?: string
+}
+
+/**
+ * 任务信息
+ */
+export interface MissionCopyData {
+  title: string
+  location: string
 }

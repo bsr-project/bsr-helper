@@ -277,8 +277,7 @@ export default class Mission extends Vue {
   async JoinMissionSubmit(data: JoinMissionPickerData) {
     if (this.currentJoinMissionType === JoinMissionPickerType.SIGN_IN) {
       await MissionApi.Instance().SignIn({
-        mission_id: data.mission_id,
-        submission_id: data.checked,
+        ...data,
         create_type: 0
       })
 
@@ -287,9 +286,7 @@ export default class Mission extends Vue {
         submission_id: data.checked
       }
     } else {
-      await MissionApi.Instance().SignOut({
-        mission_id: data.mission_id
-      })
+      await MissionApi.Instance().SignOut(data)
 
       this.activedMission = null
       this.completeMission.push(data.mission_id)

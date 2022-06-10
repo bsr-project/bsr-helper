@@ -199,11 +199,18 @@ export default class Mission extends Vue {
 
     // 自动展开 今天、明天 的面板
     _.forEach(response.lists, item => {
+      item.checked = []
 
-      item.checked =
-        item.mission_id === _.get(response.actived, 'mission_id', null)
-          ? _.get(response.actived, 'submission_id', [])
-          : []
+      // 正在进行的任务 子任务勾选
+      if (_.get(response.actived, 'mission_id', null)) {
+        item.checked = _.get(response.actived, 'submission_id', [])
+      }
+
+      // 已完成的任务 子任务勾选
+      const complete = _.find(response.complete, { mission_id: item.mission_id })
+      if (complete) {
+        item.checked = _.get(complete, 'submission_id', [])
+      }
 
       if (item.diff <= 1) {
         this.activeCollapse.push(item.mission_id)

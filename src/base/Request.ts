@@ -18,10 +18,16 @@ export default class Request extends Singleton {
     }
 
     this.axiosInstance = axios.create({
-      baseURL,
-      headers: {
+      baseURL
+    })
+
+    this.axiosInstance.interceptors.request.use((request) => {
+      // 每次请求都要设置 token
+      request.headers = {
         Authorization: `Bearer ${UserModule.token}`
       }
+
+      return request
     })
 
     this.axiosInstance.interceptors.response.use((response) => {

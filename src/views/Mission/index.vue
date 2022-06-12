@@ -239,6 +239,15 @@ export default class Mission extends Vue {
    * @param mission 
    */
   Sign(mission: Record<string, any>) {
+    if (this.activedMission) {
+      Notify({
+        type: 'danger',
+        message: '已加入其他任务'
+      })
+
+      return
+    }
+
     // 有子任务 但没选择
     if (_.get(mission.children, 'length', 0) > 0 && _.get(mission.checked, 'length', 0) === 0) {
       Notify({

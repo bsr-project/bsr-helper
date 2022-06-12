@@ -361,6 +361,8 @@ export default class JoinMissionPicker extends Vue {
       submission_id: this.submitData.checked,
       datetime: `${moment().format('YYYY-MM-DD')} ${this.currentTime}:00`,
     } as JoinMissionPickerData)
+
+    this.copy()
     this.showPicker = false
   }
 }

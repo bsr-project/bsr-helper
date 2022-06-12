@@ -310,7 +310,7 @@ export default class Mission extends Vue {
 
     Notify({
       type: 'success',
-      message: `${this.currentJoinMissionType === JoinMissionPickerType.SIGN_IN ? '签到' : '签退'}成功`
+      message: `${this.currentJoinMissionType === JoinMissionPickerType.SIGN_IN ? '签到' : '签退'}成功并复制信息回传`
     })
   }
 

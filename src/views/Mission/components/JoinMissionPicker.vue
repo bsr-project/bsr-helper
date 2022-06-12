@@ -323,6 +323,18 @@ export default class JoinMissionPicker extends Vue {
     value: string
     text: string
   }) {
+    // 车牌号没设置
+    if (_.isEmpty(this.userInfo.car_number)) {
+      this.submitData.vehicle = VEHICLE.CUSTOM
+
+      Notify({
+        type: 'danger',
+        message: '请先点击右上角姓名 设置车牌号'
+      })
+
+      return
+    }
+
     this.submitData.vehicle = _.parseInt(value)
     this.generateCopyText()
   }

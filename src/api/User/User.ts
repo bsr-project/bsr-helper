@@ -7,4 +7,12 @@ export default class UserApi extends Request {
       method: 'GET'
     })
   }
+
+  UpdateUserInfo(data: any) {
+    return this.request({
+      url: `/user`,
+      method: 'PATCH',
+      data
+    })
+  }
 }

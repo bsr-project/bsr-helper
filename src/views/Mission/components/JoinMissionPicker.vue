@@ -74,8 +74,8 @@
         <template #title>
           <div class="flex-BC">
             <span>交通工具：{{ GetVehicle() }} {{
-                submitData.vehicle === VEHICLE.DRIVE && carNumber !== ''
-                  ? `(${carNumber})`
+                submitData.vehicle === VEHICLE.DRIVE && userInfo.car_number
+                  ? `(${userInfo.car_number})`
                   : ''
             }}</span>
             <van-field v-show="submitData.vehicle === VEHICLE.CUSTOM" v-model="submitData.custom_vehicle"
@@ -135,9 +135,7 @@ import {
 
 import { MissionCopyData, JoinMissionPickerData } from '@/views/Mission/index'
 import { JoinMissionPickerType, VEHICLE } from '@/enums/JoinMission'
-import Storage from '@/utils/Storage'
-import { StorageItemType } from '@/enums/Storage'
-import { IUserInfo } from '@/store/modules/User'
+import { IUserInfo, UserModule } from '@/store/modules/User'
 
 @Component({
   name: 'JoinMissionPicker',
@@ -180,15 +178,6 @@ export default class JoinMissionPicker extends Vue {
   })
   copyData!: MissionCopyData
 
-  userInfo: IUserInfo = {
-    realname: null,
-    mobile: null,
-    bsr_code: null,
-    car_number: null,
-    id: 0,
-    name: ''
-  }
-
   submitData: JoinMissionPickerData = {
     mission_id: 0,
     checked: [],
@@ -205,8 +194,18 @@ export default class JoinMissionPicker extends Vue {
 
   currentTime = moment().format('HH:mm')
 
-  carNumber = ''
   taxiCarNumber = ''
+
+  get userInfo(): IUserInfo {
+    return UserModule.userInfo || {
+      realname: null,
+      mobile: null,
+      bsr_code: null,
+      car_number: null,
+      id: 0,
+      name: ''
+    }
+  }
 
   /**
    * 出发地
@@ -229,15 +228,6 @@ export default class JoinMissionPicker extends Vue {
   }))
 
   copyText = ''
-
-  created() {
-    const userInfo = Storage.Instance().get<IUserInfo>(StorageItemType.UserInfo)
-
-    if (userInfo) {
-      this.userInfo = userInfo
-      this.carNumber = userInfo.car_number || ''
-    }
-  }
 
   @Watch('visible')
   visibleChanged() {

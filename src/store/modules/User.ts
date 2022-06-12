@@ -7,7 +7,7 @@ import {
 } from 'vuex-module-decorators'
 
 import store from '@/store'
-import LocalStorageUtil from '@/utils/Storage'
+import Storage from '@/utils/Storage'
 import { StorageItemType } from '@/enums/Storage'
 import AuthApi from '@/api/Auth/Auth'
 import _ from 'lodash'
@@ -38,33 +38,24 @@ export interface IUserInfo extends IUser {
 
 export interface IUserState {
   token: string | null
-  user: IUser | null
   userInfo: IUserInfo | null
 }
 
 @Module({ dynamic: true, store, name: 'user' })
 class User extends VuexModule implements IUserState {
-  token = LocalStorageUtil.Instance().get<string>(StorageItemType.Token)
-  user = LocalStorageUtil.Instance().get<IUser>(StorageItemType.UserInfo)
-
+  token = Storage.Instance().get<string>(StorageItemType.Token)
   userInfo = Session.Instance().get<IUserInfo>(SessionItemType.UserInfo)
 
   @Mutation
   private SET_TOKEN(token: string) {
     this.token = token
-    LocalStorageUtil.Instance().set(StorageItemType.Token, token)
-  }
-
-  @Mutation
-  private SET_USER(user: IUser | null) {
-    this.user = user
-    LocalStorageUtil.Instance().set(StorageItemType.UserInfo, user)
+    Storage.Instance().set(StorageItemType.Token, token)
   }
 
   @Mutation
   private SET_USER_INFO(userInfo: IUserInfo | null) {
     this.userInfo = userInfo
-    LocalStorageUtil.Instance().set(StorageItemType.UserInfo, userInfo)
+    Storage.Instance().set(StorageItemType.UserInfo, userInfo)
   }
 
   @Action({ commit: 'SET_USER_INFO' })
@@ -80,8 +71,6 @@ class User extends VuexModule implements IUserState {
     data.username = data.username.trim()
     const loginResponse = await AuthApi.Instance().Login(data)
 
-    const id = _.get(loginResponse, 'id')
-    const name = _.get(loginResponse, 'name')
     const access_token = _.get(loginResponse, 'access_token')
 
     if (!access_token) {
@@ -92,17 +81,11 @@ class User extends VuexModule implements IUserState {
       return Promise.reject(new Error('登录失败'))
     }
 
-    this.SET_USER({
-      id,
-      name
-    })
-
     this.SET_TOKEN(access_token)
 
     // 获取详情
-    const userInfoResponse = await UserApi.Instance().GetInfo(id)
+    const userInfoResponse = await UserApi.Instance().GetInfo()
     Session.Instance().set(SessionItemType.UserInfo, userInfoResponse)
-    this.SET_USER_INFO(userInfoResponse)
 
     router.push('/')
 
@@ -111,7 +94,6 @@ class User extends VuexModule implements IUserState {
 
   @Action
   public ClearToken() {
-    this.SET_USER_INFO(null)
     this.SET_TOKEN('')
 
     // 清除 session storage

@@ -103,10 +103,6 @@ export default class App extends Vue {
     return UserModule.token
   }
 
-  get user() {
-    return UserModule.user ? UserModule.user : { id: -1, name: '' }
-  }
-
   get realname() {
     return UserModule.userInfo ? UserModule.userInfo.realname : ''
   }
@@ -125,7 +121,7 @@ export default class App extends Vue {
     // 如果没有 session user info && 有 token
     if (!sessionUserInfo && this.token) {
       // 请求接口获取用户信息
-      sessionUserInfo = await UserApi.Instance().GetInfo(this.user.id)
+      sessionUserInfo = await UserApi.Instance().GetInfo()
       // 存入 session storage
       Session.Instance().set(SessionItemType.UserInfo, sessionUserInfo)
       // 存入 vuex

@@ -11,10 +11,11 @@
       <span style="color: #0193dc;" @click="submit">提交</span>
     </div>
     <div>
-      <van-field v-model="query.realname" name="姓名" label="姓名" placeholder="请填写姓名" />
+      <van-field v-model="query.realname" label="姓名" placeholder="请填写姓名" />
       <van-field v-model="query.bsr_code" label="蓝天编号" placeholder="请填写蓝天编号" />
       <van-field v-model="query.car_number" label="车牌号" placeholder="请填写车牌号" />
-      <van-field v-model="query.mobile" name="手机号" label="手机号" placeholder="请填写手机号" />
+      <van-field v-model="query.mobile" label="手机号" placeholder="请填写手机号" />
+      <van-field v-model="query.password" label="密码" type="password" placeholder="密码（不修改请留空）" />
     </div>
   </van-popup>
 </template>
@@ -53,7 +54,8 @@ export default class UserInfoFormPopup extends Vue {
     realname: '',
     bsr_code: '',
     car_number: '',
-    mobile: ''
+    mobile: '',
+    password: ''
   }
 
   userInfo: IUserInfo | null = null
@@ -62,14 +64,25 @@ export default class UserInfoFormPopup extends Vue {
   visibleChanged() {
     this.showPopup = this.visible
 
-    this.userInfo = Session.Instance().get<IUserInfo>(SessionItemType.UserInfo)
+    if (this.visible) {
+      this.userInfo = Session.Instance().get<IUserInfo>(SessionItemType.UserInfo)
 
-    if (this.userInfo) {
-      this.query.realname = this.userInfo.realname || ''
-      this.query.bsr_code = this.userInfo.bsr_code || ''
-      this.query.car_number = this.userInfo.car_number || ''
-      this.query.mobile = this.userInfo.mobile || ''
+      if (this.userInfo) {
+        this.query.realname = this.userInfo.realname || ''
+        this.query.bsr_code = this.userInfo.bsr_code || ''
+        this.query.car_number = this.userInfo.car_number || ''
+        this.query.mobile = this.userInfo.mobile || ''
+      }
+    } else {
+      this.query = {
+        realname: '',
+        bsr_code: '',
+        car_number: '',
+        mobile: '',
+        password: ''
+      }
     }
+
   }
 
 

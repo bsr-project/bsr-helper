@@ -60,6 +60,7 @@ class User extends VuexModule implements IUserState {
 
   @Action({ commit: 'SET_USER_INFO' })
   public async SetUserInfo(userInfo: IUserInfo) {
+    console.log('userInfo', userInfo)
     return userInfo
   }
 
@@ -85,6 +86,8 @@ class User extends VuexModule implements IUserState {
 
     // 获取详情
     const userInfoResponse = await UserApi.Instance().GetInfo()
+
+    this.SET_USER_INFO(userInfoResponse)
     Session.Instance().set(SessionItemType.UserInfo, userInfoResponse)
 
     router.push('/')
@@ -95,6 +98,7 @@ class User extends VuexModule implements IUserState {
   @Action
   public ClearToken() {
     this.SET_TOKEN('')
+    this.SET_USER_INFO(null)
 
     // 清除 session storage
     Session.Instance().clear(SessionItemType.UserInfo)

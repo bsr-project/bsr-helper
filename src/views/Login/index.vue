@@ -22,8 +22,8 @@ import { UserModule } from '@/store/modules/User'
 })
 export default class Login extends Vue {
   query = {
-    username: 'imba97',
-    password: '111111'
+    username: '',
+    password: ''
   }
 
   submit() {

@@ -323,8 +323,9 @@ export default class JoinMissionPicker extends Vue {
     value: string
     text: string
   }) {
+    const type = _.parseInt(value) as VEHICLE
     // 车牌号没设置
-    if (_.isEmpty(this.userInfo.car_number)) {
+    if (type === VEHICLE.DRIVE && _.isEmpty(this.userInfo.car_number)) {
       this.submitData.vehicle = VEHICLE.CUSTOM
 
       Notify({

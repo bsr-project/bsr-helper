@@ -313,6 +313,8 @@ export default class JoinMissionPicker extends Vue {
         }
       }
     }
+
+    this.copyText = `【信息回传】${this.copyText}`
   }
 
   GetVehicle() {
@@ -336,7 +338,7 @@ export default class JoinMissionPicker extends Vue {
       return
     }
 
-    this.submitData.vehicle = _.parseInt(value)
+    this.submitData.vehicle = type
     this.generateCopyText()
   }
 

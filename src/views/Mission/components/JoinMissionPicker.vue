@@ -55,7 +55,7 @@
 
     <div class="control-button flex-BC">
       <span class="cl-9" @click="showPicker = false">关闭</span>
-      <span class="cl-primary" @click="Submit">
+      <span class="cl-danger fw" @click="Submit">
         {{ SignText }}并复制
       </span>
     </div>
@@ -104,7 +104,6 @@
         <div>
           <van-field v-model="copyText" rows="3" autosize readonly type="textarea" />
         </div>
-        <van-button class="copy" type="info" size="mini" @click="copy">复制</van-button>
       </van-cell>
     </van-cell-group>
 

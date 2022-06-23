@@ -275,7 +275,7 @@ export default class JoinMissionPicker extends Vue {
         }
 
         case VEHICLE.DRIVE: {
-          this.copyText = `${this.currentTime} ${this.userInfo.realname}1人1车(${this.userInfo.car_number})${departure}前往${this.copyData.location}参加${this.copyData.title}`
+          this.copyText = `${this.currentTime} ${this.userInfo.realname}1车(${this.userInfo.car_number})1人${departure}前往${this.copyData.location}参加${this.copyData.title}`
           break
         }
 

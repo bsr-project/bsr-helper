@@ -30,14 +30,6 @@ const routes: Array<RouteConfig> = [
     name: 'Mission',
     component: () =>
       import(/* webpackChunkName: "Mission" */ '@/views/Mission/index.vue')
-  },
-  {
-    path: '/InformationReturn',
-    name: 'InformationReturn',
-    component: () =>
-      import(
-        /* webpackChunkName: "InformationReturn" */ '@/views/InformationReturn/index.vue'
-      )
   }
 ]
 

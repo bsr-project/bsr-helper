@@ -1,14 +1,6 @@
 <template>
   <div>
     <van-cell-group>
-      <van-cell is-link to="InformationReturn">
-        <template #title>
-          <span>信息回传</span>
-        </template>
-        <template #label>
-          一些消息回传模板，可直接复制使用
-        </template>
-      </van-cell>
       <van-cell is-link to="Mission">
         <template #title>
           <span>任务列表</span>

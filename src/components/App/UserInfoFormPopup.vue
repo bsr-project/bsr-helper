@@ -85,8 +85,6 @@ export default class UserInfoFormPopup extends Vue {
 
   }
 
-
-
   async submit() {
     await UserApi.Instance().UpdateUserInfo(this.query)
 
